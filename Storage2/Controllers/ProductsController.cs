@@ -65,6 +65,79 @@ namespace Storage2.Controllers
             return View(product);
         }
 
+        //[HttpGet]
+        //public async Task<IActionResult> Filter()
+        //{
+        //    IEnumerable<ProductViewModel> model = await _context.Product.Select(p => new ProductViewModel
+        //    {
+        //        Id = p.Id,
+        //        Name = p.Name,
+        //        Price = p.Price,
+        //        Count = p.Count,
+        //        InventoryValue = p.Count * p.Price
+        //    })
+        //        .ToListAsync();
+
+        //    return View(model);
+        //}
+
+    
+
+        [HttpGet]
+        public async Task<IActionResult> Filter(string category)
+        {
+            ViewData["CurrentFilter"] = category;
+
+            IQueryable<ProductViewModel> model = _context.Product
+                .Where(p => string.IsNullOrEmpty(category) || p.Category.ToUpper().Contains(category.ToUpper()))
+                .Select(p => new ProductViewModel
+                {
+                    Name = p.Name,
+                    Price = p.Price,
+                    Count = p.Count,
+                    InventoryValue = p.Count * p.Price
+                });
+
+            var resultList = await model.ToListAsync();
+            return View(resultList);
+        }
+
+
+        //public async Task<IActionResult> Filter(string category)
+        //{
+        //    IEnumerable<ProductViewModel> model;
+
+        //    if (string.IsNullOrEmpty(category))
+        //    {
+        //        model = await _context.Product.Select(p => new ProductViewModel
+        //        {
+        //            Id = p.Id,
+        //            Name = p.Name,
+        //            Price = p.Price,
+        //            Count = p.Count,
+        //            InventoryValue = p.Count * p.Price
+        //        }).ToListAsync();
+        //    }
+        //    else
+        //    {
+        //        model = await _context.Product
+        //            .Where(p => p.Category.Equals(category, StringComparison.OrdinalIgnoreCase))
+        //            .Select(p => new ProductViewModel
+        //            {
+        //                Id = p.Id,
+        //                Name = p.Name,
+        //                Price = p.Price,
+        //                Count = p.Count,
+        //                InventoryValue = p.Count * p.Price
+        //            })
+        //            .ToListAsync();
+        //    }
+
+        //    return View(model);
+        //}
+
+
+
         // GET: Products/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
